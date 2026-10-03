@@ -154,3 +154,17 @@ gold_docs/
   claude_rag.py          Claude adapter
   index.html             Browser UI
 ```
+## Required BGE-M3 setup
+
+BGE-M3 is required for hybrid keyword and semantic retrieval.
+
+Install dependencies and download BGE-M3 once:
+
+    python -m pip install -r requirements.txt
+    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
+
+The model is saved in this user's local Hugging Face cache. The application loads the cached model locally when it starts retrieval.
+
+## Team API-key storage
+
+For a team deployment, store ANTHROPIC_API_KEY in the company-approved secret manager or in the protected environment of the server service account. The deployment process sets the environment variable when starting Python. The browser never receives the key, and the key is never committed to Git.
