@@ -1,0 +1,4 @@
+PyYAML>=6.0,<7
+numpy>=1.26,<3
+rank-bm25>=0.2.2,<0.3
+sentence-transformers>=3.0,<6

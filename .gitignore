@@ -1,0 +1,24 @@
+# Python and test artefacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local retrieval cache and runtime state
+gold_docs/catalog-vectors.npz
+gold_docs/aliases.json
+gold_docs/catalog-versions.json
+gold_docs/citation-ranks.json
+
+# Secrets and optional local-only model implementation
+.env
+.env.*
+!*.example
+gold_docs/local_qwen/
+
+# Generated reports and Office/PDF artefacts
+reports/*.pdf
+reports/*.pptx
+reports/*.csv
+reports/*.html

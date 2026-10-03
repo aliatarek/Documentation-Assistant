@@ -1,0 +1,1 @@
+"""Local gold documentation browser."""
