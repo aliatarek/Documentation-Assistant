@@ -32,13 +32,21 @@ YAML is the local business-documentation source. SQL establishes only that a col
 - Python 3.10 or newer.
 - An Anthropic API key with access to Claude Haiku and/or Sonnet.
 - A local clone of the dbt repository that the application should inspect.
-- Optional: local `BAAI/bge-m3` SentenceTransformers files. Without BGE-M3, BM25 keyword search remains available.
+- BAAI/bge-m3 is required for semantic retrieval.
 
 Install dependencies:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
+
+Download BGE-M3 once before starting the application:
+
+```powershell
+python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
+```
+
+BGE-M3 is required for the intended hybrid keyword and semantic retrieval pipeline. It downloads once and is reused from the local cache.
 
 Set the API key only in the terminal that starts the server:
 
@@ -58,7 +66,7 @@ python -m gold_docs.server --open-browser
 
 The server opens `http://127.0.0.1:8765`. Stop it with `Ctrl+C`.
 
-The PowerShell launcher can prompt for the key without displaying it:
+The launcher is simply an alternative way to start the same app. Choose either this launcher or the manual Python command; do not run both:
 
 ```powershell
 .\start_documentation_assistant.ps1 -UseClaude
@@ -91,25 +99,16 @@ python -m gold_docs.server `
   --open-browser
 ```
 
-## Reviewer-approved YAML edits and GitHub
+## Approving documentation in the UI
 
-1. Run the app against a local clone of the repository.
-2. Ask about an explicitly named undocumented field.
-3. Review/edit the proposed description in the UI.
+1. Start the app against a local clone of the documentation repository.
+2. Ask about an undocumented field.
+3. Review or edit the proposed column name and description.
 4. Select **Save approved description to YAML**.
-5. The backend validates the catalog field and writes only its mapped YAML file in that local clone.
-6. Use the team’s normal Git branch, commit, push, and pull-request process.
+5. The backend validates the field and writes the approved description directly to its mapped YAML file.
+6. The catalog refreshes so future searches use the new documentation.
 
-```powershell
-cd D:\work\dbt-repository
-git status
-git switch -c docs/describe-column
-git add path\to\model.yml
-git commit -m "docs: describe column"
-git push -u origin docs/describe-column
-```
-
-The app deliberately does not auto-commit, push, or open pull requests: those actions need reviewer authority and the team’s approval process.
+No separate command is needed to edit YAML. The UI saves the approved description automatically. Use the team’s normal Git commit, push, and pull-request process only when the saved change is ready to be shared.
 
 ## Retrieval pipeline
 
@@ -127,15 +126,6 @@ When a user explicitly names `model.column`, that exact field is authoritative. 
 
 - The app binds only to `127.0.0.1`; it is a single-user prototype.
 - Conversation history and documentation priorities are browser-local storage; history can be downloaded as JSON.
-- Vector cache, aliases, catalog versions, citation rank data, API-key files, and the optional local-Qwen implementation are ignored by Git.
-- Before shared production use, add organisational authentication, auditing, concurrency controls, access control, and security review.
-
-## Verify
-
-```powershell
-python -m unittest discover -s tests -v
-python -m py_compile gold_docs\server.py gold_docs\catalog.py
-```
 
 ## Current project layout
 
@@ -154,16 +144,6 @@ gold_docs/
   claude_rag.py          Claude adapter
   index.html             Browser UI
 ```
-## Required BGE-M3 setup
-
-BGE-M3 is required for hybrid keyword and semantic retrieval.
-
-Install dependencies and download BGE-M3 once:
-
-    python -m pip install -r requirements.txt
-    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
-
-The model is saved in this user's local Hugging Face cache. The application loads the cached model locally when it starts retrieval.
 
 ## Team API-key storage
 
